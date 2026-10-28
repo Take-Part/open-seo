@@ -57,6 +57,15 @@ export const requireAllowedEmails = (remedy: string) =>
     return emails;
   });
 
+/**
+ * One allow rule per ACCESS_ALLOWED_EMAILS entry: `@example.com` admits the
+ * whole email domain, anything else is an exact address.
+ */
+const accessRule = (entry: string) =>
+  entry.startsWith("@")
+    ? { emailDomain: { domain: entry.slice(1).toLowerCase() } }
+    : { email: { email: entry } };
+
 /** The gate itself: an email allow-policy on a self-hosted Access application. */
 export const emailAccessGate = (options: {
   policyId: string;
@@ -70,7 +79,7 @@ export const emailAccessGate = (options: {
     const allow = yield* Cloudflare.Access.Policy(options.policyId, {
       name: options.policyName,
       decision: "allow",
-      include: options.emails.map((email) => ({ email: { email } })),
+      include: options.emails.map(accessRule),
     });
     return yield* Cloudflare.Access.Application(options.applicationId, {
       type: "self_hosted",

@@ -1,5 +1,10 @@
 import { env } from "cloudflare:workers";
-import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
+import {
+  createRemoteJWKSet,
+  decodeJwt,
+  jwtVerify,
+  type JWTPayload,
+} from "jose";
 import { AppError } from "@/server/lib/errors";
 import { validateTeamDomain } from "@/shared/selfhost-checks";
 import { classifyAccessVerificationError } from "./accessTokenErrors";
@@ -82,7 +87,10 @@ export async function resolveCloudflareAccessContext(
   } catch (error) {
     // The classified AppError carries operator guidance; log the raw jose
     // error too, since it is the only place the underlying cause survives.
-    console.error("Cloudflare Access token verification failed:", error);
+    console.error("Cloudflare Access token verification failed:", error, {
+      expectedIssuer: teamDomain,
+      tokenIssuer: decodeJwt(token).iss,
+    });
 
     throw classifyAccessVerificationError(error);
   }

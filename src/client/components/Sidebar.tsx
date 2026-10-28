@@ -29,7 +29,7 @@ import {
 import { ThemePreferenceRadio } from "@/client/components/ThemePreferenceMenuItems";
 import { getStandardErrorMessage } from "@/client/lib/error-messages";
 import { signOutAndRedirect, useSession } from "@/lib/auth-client";
-import { isEveryAppClientAuthMode } from "@/lib/auth-mode";
+import { getClientAuthMode, isEveryAppClientAuthMode } from "@/lib/auth-mode";
 import { everyAppAccountQueryOptions } from "@/client/features/every-app/everyAppAccountQueries";
 import { BILLING_ROUTE } from "@/shared/billing";
 import {
@@ -214,6 +214,10 @@ export function Sidebar({
 // holds help and OpenSEO settings.
 const everyApp = isEveryAppClientAuthMode();
 
+// Cloudflare Access owns sign-in in this mode, so signing out means ending
+// the Access session at its logout endpoint.
+const cloudflareAccess = getClientAuthMode() === "cloudflare_access";
+
 /**
  * The way back up, first in the sidebar as in every Every App app. The row
  * keeps its height while the gateway's URL loads so the header doesn't jump.
@@ -370,11 +374,24 @@ function AccountFooter({ ready }: { ready: boolean }) {
             </DropdownMenu>
           </SidebarMenuItem>
         ) : ready ? (
-          <SidebarNavLink
-            icon={Settings}
-            label="Settings"
-            linkProps={{ to: "/settings" }}
-          />
+          <>
+            <SidebarNavLink
+              icon={Settings}
+              label="Settings"
+              linkProps={{ to: "/settings" }}
+            />
+            {cloudflareAccess ? (
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  className={navButtonClass}
+                  render={<a href="/cdn-cgi/access/logout" />}
+                >
+                  <LogOut className="size-4" />
+                  <span>Sign out</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ) : null}
+          </>
         ) : (
           // The account row's slot while the session loads.
           <SidebarMenuItem>

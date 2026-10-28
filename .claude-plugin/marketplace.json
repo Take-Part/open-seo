@@ -1,15 +1,15 @@
 {
-  "name": "openseo",
+  "name": "takepart",
   "owner": {
-    "name": "OpenSEO",
-    "url": "https://openseo.so"
+    "name": "Take Part",
+    "url": "https://takepart.co"
   },
-  "description": "OpenSEO's official Claude Code plugin marketplace.",
+  "description": "Take Part's OpenSEO plugin, connected to our self-hosted OpenSEO.",
   "plugins": [
     {
       "name": "openseo",
       "source": "./plugins/openseo",
-      "description": "Without good data, your agent gives generic advice. Keyword research, competitor research, backlinks, and site audits. All for $10/month.",
+      "description": "Keyword research, competitor research, backlinks, site audits, rank tracking and AI visibility, using Take Part's self-hosted OpenSEO (sign in with your @takepart.co Google account).",
       "category": "SEO"
     }
   ]

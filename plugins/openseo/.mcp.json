@@ -2,7 +2,7 @@
   "mcpServers": {
     "openseo": {
       "type": "http",
-      "url": "https://app.openseo.so/mcp"
+      "url": "https://open-seo-selfhost.takepart.workers.dev/mcp"
     }
   }
 }

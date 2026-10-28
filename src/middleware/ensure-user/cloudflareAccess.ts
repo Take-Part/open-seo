@@ -102,5 +102,18 @@ export async function resolveCloudflareAccessContext(
     throw new AppError("UNAUTHENTICATED");
   }
 
+  // Access admits a whole team with no billing limits, so this per-user cap
+  // keeps a runaway agent or script from flooding the shared DataForSEO key.
+  // The binding only exists in the alchemy deploy; elsewhere nothing limits.
+  if (env.ACCESS_RATE_LIMIT) {
+    const { success } = await env.ACCESS_RATE_LIMIT.limit({ key: userId });
+    if (!success) {
+      throw new AppError(
+        "RATE_LIMITED",
+        "Rate limit exceeded: 300 requests per minute. Try again in a minute.",
+      );
+    }
+  }
+
   return resolveSharedWorkspaceContext(userId, userEmail);
 }

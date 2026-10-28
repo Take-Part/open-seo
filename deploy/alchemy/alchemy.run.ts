@@ -533,6 +533,14 @@ export default Alchemy.Stack(
           simple: { limit: 20, period: 60 },
         }),
 
+        // Per-user throttle behind Cloudflare Access, where billing (and its
+        // limits) is off and everyone shares one DataForSEO key (see
+        // src/middleware/ensure-user/cloudflareAccess.ts).
+        ACCESS_RATE_LIMIT: Cloudflare.RateLimit("ACCESS_RATE_LIMIT", {
+          namespaceId: 1003,
+          simple: { limit: 300, period: 60 },
+        }),
+
         // Durable Objects (the chat agents; the audit scratchpad lives
         // privately in the open-seo-audit worker). Alchemy backs new DO
         // classes with SQLite storage; wrangler.jsonc's `migrations` only
